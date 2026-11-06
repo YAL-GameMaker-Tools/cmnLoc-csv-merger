@@ -1,0 +1,4 @@
+--js bin/script.js
+--class-path src
+--main CSVMerger
+-D js-es=6

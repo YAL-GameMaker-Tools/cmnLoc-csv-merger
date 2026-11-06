@@ -1,0 +1,40 @@
+body {
+	font: 15px sans-serif;
+	background: #889EC5;
+}
+main {
+	background: white;
+	max-width: 720px;
+	padding: 10px;
+	margin: 0 auto;
+}
+main > p {
+	margin: 0.5em 0;
+}
+main > h1 {
+	margin: 0;
+	transform: skewX(-5deg);
+}
+main fieldset label {
+	display: block;
+}
+main .textarea-row {
+	display: flex;
+	flex-direction: row;
+	gap: 0.3em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	align-items: center;
+}
+main textarea {
+	width: 100%;
+	resize: vertical;
+	box-sizing: border-box;
+	min-height: 7em;
+	overflow-x: auto;
+    text-wrap-mode: nowrap;
+}
+main #merge {
+	margin: 0.3em;
+	padding: 0.3em 1em;
+}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html><head>
+	<title>Localization CSV Merger</title>
+	<link rel="stylesheet" href="style.css"/>
+</head><body>
+	<main>
+		<h1>YAL's Localization CSV Merger</h1>
+		<p>
+			It is primarily intended for
+			<a href="https://yellowafterlife.itch.io/gamemaker-cmn-loc" target="_blank">cmnLoc</a>,
+			but maybe you can use it for something else too.
+		</p>
+		<!-- -->
+		<fieldset id="base">
+			<legend>Base (fields to keep)</legend>
+			<label>
+				Context column
+				<select id="base-ctx" class="context">
+					<option selected value="auto">Auto</option>
+					<option value="on">On</option>
+					<option value="off">Off</option>
+				</select>
+			</label>
+			<form class="textarea-row" id="base-form">
+				<input type="file" id="base-pick" />
+			</form>
+			<textarea id="base-text" placeholder="Group,Key,Context,Text&#10;Init,GameName,,Nuclear Throne"></textarea>
+		</fieldset>
+		<!-- -->
+		<fieldset id="patch">
+			<legend>Patch (fields to merge)</legend>
+			<label>
+				Context column
+				<select id="patch-ctx" class="context">
+					<option selected value="auto">Auto</option>
+					<option value="on">On</option>
+					<option value="off">Off</option>
+				</select>
+			</label>
+			<form class="textarea-row" id="patch-form">
+				<input type="file" id="patch-pick" />
+			</form>
+			<textarea id="patch-text" placeholder="Group,Key,Context,Text&#10;Init,GameName,,Nuclear Throne"></textarea>
+		</fieldset>
+		<fieldset>
+			<legend>Skip these groups</legend>
+			<textarea id="skip-groups" placeholder="DevMenu&#10;Debug*"></textarea>
+		</fieldset>
+		<!-- -->
+		<input type="button" value="Merge!" id="merge"/>
+		<form class="textarea-row">
+			<label for="result">Result</label>
+			<input type="button" id="result-save" value="Download" />
+		</form>
+		<textarea id="result" placeholder="Merged CSV will appear here!"></textarea>
+		<!-- -->
+		<script src="csv.js"></script>
+		<script src="fileSaver.min.js"></script>
+		<script src="script.js"></script>
+		<script>
+			window.addEventListener("load", (e) => { // Nuclear Throne defaults
+				const find = (query) => document.querySelector(query);
+				find("#base legend").innerText = "Base (lang-example.csv)";
+				find("#patch legend").innerText = "Patch (lang.csv)";
+				find("#skip-groups").value = [
+					"Init",
+					"CauseOfDeath",
+					"Ntt"
+				].join("\n");
+			});
+		</script>
+	</main>
+</body></html>
