@@ -11,7 +11,7 @@ First, install [Haxe](https://haxe.org). Then,
 1. Open Terminal/Command Prompt/etc. in the repository's directory
 2. `haxe build.hxml`
 
-If all is well, `bin/script.js` will be updated
+If all is well, `docs/script.js` will be updated
 
 ## Credits
 
