@@ -43,8 +43,21 @@
 			<textarea id="patch-text" placeholder="Group,Key,Context,Text&#10;Init,GameName,,Nuclear Throne"></textarea>
 		</fieldset>
 		<fieldset>
-			<legend>Skip these groups</legend>
+			<legend>Other settings</legend>
+			<label for="skip-groups">Skip these groups</label>
 			<textarea id="skip-groups" placeholder="DevMenu&#10;Debug*"></textarea>
+			
+			<label for="skip-exceptions">But keep these Group:Key pairs</label>
+			<textarea id="skip-exceptions" placeholder="Debug:Important"></textarea>
+			
+			<label>
+				Context column in Result
+				<select id="result-ctx">
+					<option selected value="auto">Auto</option>
+					<option value="on">On</option>
+					<option value="off">Off</option>
+				</select>
+			</label>
 		</fieldset>
 		<!-- -->
 		<input type="button" value="Merge!" id="merge"/>
@@ -58,16 +71,22 @@
 		<script src="fileSaver.min.js"></script>
 		<script src="script.js"></script>
 		<script>
+			/*
 			window.addEventListener("load", (e) => { // Nuclear Throne defaults
 				const find = (query) => document.querySelector(query);
 				find("#base legend").innerText = "Base (lang-example.csv)";
 				find("#patch legend").innerText = "Patch (lang.csv)";
+				find("#result-ctx").value = "off";
 				find("#skip-groups").value = [
 					"Init",
 					"CauseOfDeath",
-					"Ntt"
+					"Ntt*"
+				].join("\n");
+				find("#skip-exceptions").value = [
+					"Init:Name"
 				].join("\n");
 			});
+			//*/
 		</script>
 	</main>
 </body></html>

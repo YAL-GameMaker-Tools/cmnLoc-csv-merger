@@ -53,13 +53,24 @@ class CSVMerger {
 	static find(query,c) {
 		return window.document.querySelector(query);
 	}
-	static mergeLoc(base,patch,skipGroupsText) {
+	static mergeLoc(base,patch,skipGroupsText,skipExceptions,resultCtxValue) {
 		let baseTable = base.parse();
 		let baseCtx = base.wantContext(baseTable);
 		let baseTextAt = baseCtx ? 3 : 2;
 		let patchTable = patch.parse();
 		let patchCtx = patch.wantContext(patchTable);
 		let patchCtxAt = patchCtx ? 3 : 2;
+		let resultCtx;
+		switch(resultCtxValue) {
+		case "off":
+			resultCtx = false;
+			break;
+		case "on":
+			resultCtx = true;
+			break;
+		default:
+			resultCtx = baseCtx || patchCtx;
+		}
 		let skipGroups = [];
 		let _g = 0;
 		let _g1 = skipGroupsText.split("\n");
@@ -79,6 +90,7 @@ class CSVMerger {
 				++_g;
 				let start = 0;
 				let useSnip = false;
+				let match = true;
 				let _g1 = 0;
 				while(_g1 < skipper.length) {
 					let part = skipper[_g1];
@@ -87,10 +99,14 @@ class CSVMerger {
 					if(useSnip) {
 						let pos = group.indexOf(part,start);
 						if(pos < 0) {
-							continue;
+							match = false;
+							break;
 						}
 						start = pos + part.length;
 					}
+				}
+				if(!match) {
+					continue;
 				}
 				if(useSnip && start < group.length) {
 					continue;
@@ -99,7 +115,6 @@ class CSVMerger {
 			}
 			return false;
 		};
-		window.shouldSkipGroup = shouldSkipGroup;
 		let header = patchTable[0];
 		let out = [header];
 		let cols = header.length;
@@ -111,6 +126,11 @@ class CSVMerger {
 			let group = baseRow[0];
 			let key = baseRow[1];
 			let text = baseRow[baseTextAt];
+			if(shouldSkipGroup(group,skipGroups)) {
+				if(!skipExceptions.h[group + ":" + key]) {
+					continue;
+				}
+			}
 			let patchRow = patchTable.find(function(row) {
 				if(row[0] == group && row[1] == key) {
 					return row[patchCtxAt] == text;
@@ -119,17 +139,30 @@ class CSVMerger {
 				}
 			});
 			if(patchRow != null) {
+				if(resultCtx) {
+					if(!patchCtx) {
+						patchRow.splice(2,0,"");
+					}
+				} else if(patchCtx) {
+					patchRow.splice(2,1);
+				}
 				out.push(patchRow);
 			} else {
 				console.log("Missing:",[group,key,text]);
-				let copy = baseRow.slice();
-				let _g = copy.length;
+				if(resultCtx) {
+					if(!baseCtx) {
+						baseRow.splice(2,0,"");
+					}
+				} else if(baseCtx) {
+					baseRow.splice(2,1);
+				}
+				let _g = baseRow.length;
 				let _g1 = cols;
 				while(_g < _g1) {
 					let _ = _g++;
-					copy.push("");
+					baseRow.push("");
 				}
-				out.push(copy);
+				out.push(baseRow);
 			}
 		}
 		return CSV.serialize(out);
@@ -138,12 +171,22 @@ class CSVMerger {
 		let base = new CSVFieldSet(window.document.querySelector("#base"));
 		let patch = new CSVFieldSet(window.document.querySelector("#patch"));
 		let result = window.document.querySelector("#result");
+		let resultCtx = window.document.querySelector("#result-ctx");
 		let skipGroupsField = window.document.querySelector("#skip-groups");
+		let skipExceptions = window.document.querySelector("#skip-exceptions");
 		let merge = window.document.querySelector("#merge");
 		merge.onclick = function(e) {
 			result.value = "Merging...";
+			let exceptMap = new haxe_ds_StringMap();
+			let _g = 0;
+			let _g1 = skipExceptions.value.split("\n");
+			while(_g < _g1.length) {
+				let line = _g1[_g];
+				++_g;
+				exceptMap.h[line] = true;
+			}
 			return window.setTimeout(function() {
-				return result.value = CSVMerger.mergeLoc(base,patch,skipGroupsField.value);
+				return result.value = CSVMerger.mergeLoc(base,patch,skipGroupsField.value,exceptMap,resultCtx.value);
 			});
 		};
 		let saveResult = window.document.querySelector("#result-save");
@@ -208,6 +251,11 @@ class StringTools {
 	}
 	static trim(s) {
 		return StringTools.ltrim(StringTools.rtrim(s));
+	}
+}
+class haxe_ds_StringMap {
+	constructor() {
+		this.h = Object.create(null);
 	}
 }
 class haxe_iterators_ArrayIterator {
